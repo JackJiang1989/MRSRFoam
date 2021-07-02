@@ -9,7 +9,6 @@ forAll(fluidRegions, i)
     if (residualControlUsedFluid[i])
     {
         resControlUsed = true;
-        break;
     }
 }
 
@@ -18,7 +17,6 @@ forAll(solidRegions, i)
     if(residualControlUsedSolid[i])
     {
         resControlUsed = true;
-        break;
     }
 }
 
@@ -53,16 +51,16 @@ if (resControlUsed)
     }
 }
 
-if (!runTime.run())
+if (finalIter && resControlUsed && !allRegionsConverged)
 {
-    Info<< "\nRegions not converged after " << runTime.timeName()
-        << " iterations" << endl;
+    Info<< "\nRegions not converged after " << nOuterCorr
+        << " outer correctors" << endl;
 }
-else if (runTime.run() && resControlUsed && allRegionsConverged)
+else if (finalIter && resControlUsed && allRegionsConverged)
 {
-    Info<< "\nRegions converged after " << runTime.timeName()
-        << " iterations" << endl;
+    Info<< "\nRegions converged after " << oCorr
+        << " outer correctors" << endl;
 
-    // Save converged time step and end the run
-    runTime.writeAndEnd();
+    // Leave PIMPLE loop
+    break;
 }
